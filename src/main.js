@@ -4,6 +4,8 @@ import createRouter from "./router";
 import createStore from "./store";
 import { sync } from 'vuex-router-sync'
 import Meta from 'vue-meta'
+import 'normalize.css'
+import './common.css'
 
 Vue.config.productionTip = false
 

@@ -1,4 +1,3 @@
-const webpack = require('webpack')
 const pkg = require('./package.json')
 
 console.log(`Nodejs version: ${process.version}.`)
@@ -28,11 +27,6 @@ const serverConfig = () => {
         splitChunks: false
       },
       plugins: [
-        new webpack.DefinePlugin({
-          'process.env': {
-            VUE_ENV: JSON.stringify('server')
-          }
-        }),
         new VueSSRServerPlugin()
       ]
     },
@@ -58,31 +52,7 @@ const clientConfig = () => {
         }
       },
       plugins: [
-        new webpack.DefinePlugin({
-          'process.env': {
-            VUE_ENV: false
-          }
-        }),
-        {
-          apply(compiler) {
-            const filename = 'ssr/vue-ssr-client-manifest.json';
-            new VueSSRClientPlugin({ filename }).apply(compiler)
-            const ID = 'ssr-client-webpack-plugin-fix'
-            compiler.hooks.emit.tapAsync(ID, (compilation, callback) => {
-              let manifest = JSON.parse(compilation.assets[filename].source())
-              manifest.all = manifest.all.filter(v => !v.endsWith('.css.map'))
-              Object.keys(manifest.modules).forEach(mid => {
-                manifest.modules[mid] = manifest.modules[mid].filter(v => v !== -1)
-              })
-              manifest = JSON.stringify(manifest)
-              compilation.assets[filename] = {
-                source() { return manifest },
-                size() { return manifest.length }
-              }
-              callback()
-            })
-          }
-        }
+        new VueSSRClientPlugin({ filename: 'ssr/vue-ssr-client-manifest.json' })
       ]
     },
     chainWebpack(config) {
