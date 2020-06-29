@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html class="no-js">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0,width=device-width,viewport-fit=cover">
+    <link rel="icon" href="{{process.env.BASE_URL}}favicon.ico">
+    {{{ meta.inject().title.text() }}}
+    {{{ meta.inject().meta.text() }}}
+  </head>
+  <body>
+    <!--[if lt IE 9]>
+      <p>
+        You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.
+      </p>
+    <![endif]-->
+    <!--vue-ssr-outlet-->
+  </body>
+</html>
