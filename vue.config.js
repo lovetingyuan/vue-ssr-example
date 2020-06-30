@@ -1,5 +1,3 @@
-const pkg = require('./package.json')
-
 console.log(`Nodejs version: ${process.version}.`)
 
 const isProd = process.env.NODE_ENV === 'production'
@@ -16,6 +14,7 @@ const serverConfig = () => {
     configureWebpack: {
       target: 'node',
       devtool: 'source-map',
+      node: false,
       output: {
         libraryTarget: 'commonjs2'
       },
@@ -37,7 +36,7 @@ const serverConfig = () => {
       ).forEach(name => {
         config.plugins.delete(name)
       })
-      config.module.rule('js').uses.delete('babel-loader')
+      config.module.rules.delete('js')
     }
   }
 }
@@ -46,20 +45,11 @@ const clientConfig = () => {
   const VueSSRClientPlugin = require('vue-server-renderer/client-plugin')
   return {
     configureWebpack: {
-      optimization: {
-        runtimeChunk: {
-          name: 'manifest'
-        }
-      },
       plugins: [
         new VueSSRClientPlugin({ filename: 'ssr/vue-ssr-client-manifest.json' })
       ]
     },
     chainWebpack(config) {
-      config.plugin('html').tap(args => {
-        args[0].title = pkg.name + '_' + pkg.version
-        return args
-      })
       if (!isProd) { // no need to use babel in development.
         config.module.rules.delete('js')
       }

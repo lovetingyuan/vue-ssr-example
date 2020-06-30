@@ -33,10 +33,10 @@ const renderer = createBundleRenderer(serverBundle, {
 function SSRMiddleware (ctx) {
   console.log('Request route: ' + ctx.request.href)
   const cacheUrl = ctx.request.href
-  const hit = microCache.get(cacheUrl)
-  if (hit) {
+  const cachedHtml = microCache.get(cacheUrl)
+  if (cachedHtml) {
     ctx.type = 'html'
-    ctx.body = hit
+    ctx.body = cachedHtml
     return
   }
   return renderer.renderToString({
@@ -45,6 +45,14 @@ function SSRMiddleware (ctx) {
     ctx.type = 'html'
     ctx.body = html
     microCache.set(cacheUrl, html)
+  }).catch(err => {
+    if (err && err.status === 404) {
+      ctx.status = 404
+      ctx.body = 'SSR Not found.'
+    } else {
+      ctx.status = 500
+      ctx.body = 'SSR Server error.'
+    }
   })
 }
 
@@ -52,22 +60,22 @@ ssrRoutes.forEach(route => {
   router.get(route, SSRMiddleware)
 })
 
-app.use(bodyParser())
-app.use(router.middleware())
-app.use(serveStatic('./dist'))
-
 app.use(async (ctx, next) => {
   try {
     await next()
   } catch (err) {
-    console.error('SSR error: ', err)
-    if (err && err.status === 404) {
-      ctx.throw(404)
+    if (err && typeof err.status === 'number') {
+      ctx.status = err.status
+      ctx.body = err.message
     } else {
-      ctx.throw((err && err.status) || 500, (err && err.message) || 'Unknown Server Error.')
+      ctx.status = 500
     }
   }
 })
+
+app.use(bodyParser())
+app.use(router.middleware())
+app.use(serveStatic('./dist'))
 
 app.listen(port)
 
