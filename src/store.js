@@ -20,7 +20,7 @@ export default function createStore () {
         // mock api request
         return new Promise((resolve) => {
           setTimeout(() => {
-            commit('setMessage', 'Hello, Vue SSR.')
+            commit('setMessage', 'Hello, <a href="https://ssr.vuejs.org/">Vue SSR</a>.')
             resolve()
           }, 2000)
         })

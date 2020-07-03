@@ -1,6 +1,6 @@
 <template>
   <div class="hello">
-    <h1>{{ msg || 'loading...' }}</h1>
+    <h1 v-html="msg"></h1>
     <p>
       For a guide and recipes on how to configure / customize this project,<br />
       check out the
@@ -105,14 +105,37 @@
 <script>
 export default {
   name: "HelloWorld",
-  props: {
-    msg: String
+  serverPrefetch () {
+    // return the Promise from the action
+    // so that the component waits before rendering
+    return this.fetchMessage()
+  },
+  computed: {
+    msg() {
+      return this.$store.state.message
+    }
+  },
+  mounted () {
+    // If we didn't already do it on the server
+    // we fetch the item (will first show the loading text)
+    if (!this.msg) {
+      this.fetchMessage()
+    }
+  },
+  methods: {
+    fetchMessage () {
+      // return the Promise from the action
+      return this.$store.dispatch('fetchMessage')
+    }
   }
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+h1:empty:before {
+  content: "loading...";
+}
 h3 {
   margin: 40px 0 0;
 }

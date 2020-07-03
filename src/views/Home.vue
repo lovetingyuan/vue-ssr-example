@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld :msg="msg" />
+    <HelloWorld />
   </div>
 </template>
 
@@ -19,29 +19,6 @@ export default {
     meta: [
       { name: 'description', content: 'This is home page.' }
     ]
-  },
-  serverPrefetch () {
-    // return the Promise from the action
-    // so that the component waits before rendering
-    return this.fetchMessage()
-  },
-  computed: {
-    msg() {
-      return this.$store.state.message
-    }
-  },
-  mounted () {
-    // If we didn't already do it on the server
-    // we fetch the item (will first show the loading text)
-    if (!this.msg) {
-      this.fetchMessage()
-    }
-  },
-  methods: {
-    fetchMessage () {
-      // return the Promise from the action
-      return this.$store.dispatch('fetchMessage')
-    }
   }
 };
 </script>
