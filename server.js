@@ -46,6 +46,7 @@ function SSRMiddleware (ctx) {
     ctx.body = html
     microCache.set(cacheUrl, html)
   }).catch(err => {
+    console.error(err)
     if (err && err.status === 404) {
       ctx.status = 404
       ctx.body = 'SSR Not found.'
@@ -64,6 +65,7 @@ app.use(async (ctx, next) => {
   try {
     await next()
   } catch (err) {
+    console.error(err)
     if (err && typeof err.status === 'number') {
       ctx.status = err.status
       ctx.body = err.message
