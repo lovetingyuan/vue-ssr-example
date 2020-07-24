@@ -19,7 +19,7 @@ const serverConfig = () => {
         libraryTarget: 'commonjs2'
       },
       externals: nodeExternals({
-        whitelist: /\.(css|svg)$/
+        allowlist: /\.(css|svg)$/
       }),
       optimization: {
         minimize: false,
