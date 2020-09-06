@@ -43,10 +43,27 @@ const serverConfig = () => {
 
 const clientConfig = () => {
   const VueSSRClientPlugin = require('vue-server-renderer/client-plugin')
+  const filename = 'ssr/vue-ssr-client-manifest.json'
   return {
     configureWebpack: {
       plugins: [
-        new VueSSRClientPlugin({ filename: 'ssr/vue-ssr-client-manifest.json' })
+        new VueSSRClientPlugin({ filename }),
+        {
+          apply(compiler) {
+            compiler.hooks.emit.tapAsync('vue-ssr-client-plugin', (compilation, cb) => {
+              let manifest = JSON.parse(
+                compilation.assets[filename].source()
+              )
+              // you can process manifest here
+              manifest = JSON.stringify(manifest)
+              compilation.assets[filename] = {
+                source () { return manifest },
+                size () { return manifest.length }
+              }
+              cb()
+            })
+          }
+        }
       ]
     },
     chainWebpack(config) {
